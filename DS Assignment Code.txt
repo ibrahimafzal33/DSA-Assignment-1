@@ -1,0 +1,144 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Task node structure
+struct Task {
+    int taskID;
+    string description;
+    int priority;
+    Task* next = NULL;
+};
+
+// Head of the task list
+Task* head = NULL;
+
+// Function to add a new task to the list based on priority
+void add_task() {
+    Task* newTask = new Task;
+
+    cout << "Enter Task ID: ";
+    cin >> newTask->taskID;
+    cin.ignore();  // to consume the newline character after taskID input
+    cout << "Enter Task Description: ";
+    getline(cin, newTask->description);
+    cout << "Enter Task Priority (higher number means higher priority): ";
+    cin >> newTask->priority;
+
+    // Insert the new task in the correct position based on priority
+    if (head == NULL || head->priority < newTask->priority) {
+        newTask->next = head;
+        head = newTask;
+    } else {
+        Task* current = head;
+        while (current->next != NULL && current->next->priority >= newTask->priority) {
+            current = current->next;
+        }
+        newTask->next = current->next;
+        current->next = newTask;
+    }
+
+    cout << "Task added successfully.\n";
+}
+
+// Function to view all tasks
+void view_tasks() {
+    if (head == NULL) {
+        cout << "No tasks in the list.\n";
+        return;
+    }
+
+    Task* current = head;
+    cout << "Tasks in the list (sorted by priority):\n";
+    while (current != NULL) {
+        cout << "Task ID: " << current->taskID
+             << ", Description: " << current->description
+             << ", Priority: " << current->priority << "\n";
+        current = current->next;
+    }
+}
+
+// Function to remove the task with the highest priority (first task)
+void remove_highest_priority_task() {
+    if (head == NULL) {
+        cout << "No tasks to remove.\n";
+        return;
+    }
+
+    Task* temp = head;
+    head = head->next;
+    cout << "Removing task with ID: " << temp->taskID << "\n";
+    delete temp;
+}
+
+// Function to remove a specific task by its task ID
+void remove_task_by_id() {
+    if (head == NULL) {
+        cout << "No tasks in the list.\n";
+        return;
+    }
+
+    int taskID;
+    cout << "Enter the Task ID to remove: ";
+    cin >> taskID;
+
+    if (head->taskID == taskID) {
+        Task* temp = head;
+        head = head->next;
+        delete temp;
+        cout << "Task with ID " << taskID << " removed.\n";
+        return;
+    }
+
+    Task* current = head;
+    Task* prev = NULL;
+    while (current != NULL && current->taskID != taskID) {
+        prev = current;
+        current = current->next;
+    }
+
+    if (current == NULL) {
+        cout << "Task with ID " << taskID << " not found.\n";
+    } else {
+        prev->next = current->next;
+        delete current;
+        cout << "Task with ID " << taskID << " removed.\n";
+    }
+}
+
+// Main function with the menu
+int main() {
+    int choice;
+    do {
+        cout << "\n--- Task Management System ---\n";
+        cout << "1. Add a new task\n";
+        cout << "2. View all tasks\n";
+        cout << "3. Remove the highest priority task\n";
+        cout << "4. Remove a task by ID\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                add_task();
+                break;
+            case 2:
+                view_tasks();
+                break;
+            case 3:
+                remove_highest_priority_task();
+                break;
+            case 4:
+                remove_task_by_id();
+                break;
+            case 5:
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 5);
+
+    return 0;
+} 
